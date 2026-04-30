@@ -314,70 +314,7 @@
       animation: blink 1.5s ease-in-out infinite;
     }
 
-    /* MUSIC SECTION */
-    .music-section {
-      background: rgba(0, 0, 80, 0.8);
-      border: 3px outset #c0c0c0;
-      padding: 12px 15px;
-      margin: 20px 0;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .music-label {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.5rem;
-      color: var(--neon-yellow);
-      flex-shrink: 0;
-    }
-    .music-info {
-      font-family: 'VT323', monospace;
-      font-size: 1.2rem;
-      color: var(--neon-cyan);
-      flex: 1;
-      min-width: 150px;
-    }
-    .music-controls {
-      display: flex;
-      gap: 6px;
-    }
-    .music-btn {
-      background: #c0c0c0;
-      border: 2px outset #ffffff;
-      padding: 4px 10px;
-      font-family: 'VT323', monospace;
-      font-size: 1.1rem;
-      cursor: pointer;
-      color: #000;
-    }
-    .music-btn:active {
-      border-style: inset;
-    }
 
-    /* NOW PLAYING ANIMATION */
-    .equalizer {
-      display: flex;
-      align-items: flex-end;
-      gap: 2px;
-      height: 20px;
-    }
-    .eq-bar {
-      width: 4px;
-      background: var(--neon-green);
-      box-shadow: 0 0 4px var(--neon-green);
-      animation: eq-anim 0.5s ease-in-out infinite alternate;
-    }
-    .eq-bar:nth-child(1) { animation-delay: 0s; height: 30%; }
-    .eq-bar:nth-child(2) { animation-delay: 0.1s; height: 70%; }
-    .eq-bar:nth-child(3) { animation-delay: 0.2s; height: 50%; }
-    .eq-bar:nth-child(4) { animation-delay: 0.15s; height: 90%; }
-    .eq-bar:nth-child(5) { animation-delay: 0.05s; height: 40%; }
-
-    @keyframes eq-anim {
-      from { height: 10%; }
-      to { height: 100%; }
-    }
 
     /* SCROLLING STARS BACKGROUND */
     .stars {
@@ -627,30 +564,7 @@
       </div>
     </div>
 
-    <!-- MUSIC SECTION -->
-    <div class="music-section">
-      <div class="music-label">🎵 NOW<br>PLAYING</div>
-      <div class="equalizer" id="equalizer">
-        <div class="eq-bar"></div>
-        <div class="eq-bar"></div>
-        <div class="eq-bar"></div>
-        <div class="eq-bar"></div>
-        <div class="eq-bar"></div>
-      </div>
-      <div class="music-info">
-        <span id="track-name">🎼 Ukrainische Klassik</span><br>
-        <span style="font-size:0.95rem; color:#aaa;">Mykola Lysenko - Ukrainische Rhapsodie</span>
-      </div>
-      <div class="music-controls">
-        <button class="music-btn" onclick="toggleMusic()">▶/⏸</button>
-        <button class="music-btn" onclick="nextTrack()">⏭</button>
-      </div>
 
-        <audio id="audio-player" loop>
-        <source src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Mykola_Lysenko_-_Fantasy_on_Ukrainian_Folk_Themes.ogg" type="audio/ogg">
-        <source src="https://upload.wikimedia.org/wikipedia/commons/transcoded/8/8d/Mykola_Lysenko_-_Fantasy_on_Ukrainian_Folk_Themes.ogg/Mykola_Lysenko_-_Fantasy_on_Ukrainian_Folk_Themes.ogg.mp3" type="audio/mpeg">
-      </audio>
-    </div>
 
     <!-- VODKA INFOS -->
     <div class="alert-box">
@@ -736,54 +650,7 @@
     updateCountdown();
     setInterval(updateCountdown, 1000);
 
-    // === MUSIC via HTML5 Audio (Wikimedia Commons - lizenzfrei) ===
-    const tracks = [
-      {
-        src: 'https://upload.wikimedia.org/wikipedia/commons/8/8d/Mykola_Lysenko_-_Fantasy_on_Ukrainian_Folk_Themes.ogg',
-        name: '🎼 Lysenko - Fantasy on Ukrainian Folk Themes'
-      },
-      {
-        src: 'https://upload.wikimedia.org/wikipedia/commons/b/b7/Mykola_Lysenko_-_Elegy.ogg',
-        name: '🎻 Lysenko - Elegie'
-      },
-    ];
-    let currentTrack = 0;
-    let isPlaying = false;
-    const audio = document.getElementById('audio-player');
 
-    function toggleMusic() {
-      if (!isPlaying) {
-        audio.src = tracks[currentTrack].src;
-        audio.play().then(() => {
-          isPlaying = true;
-          startEqualizer();
-          document.getElementById('track-name').textContent = tracks[currentTrack].name;
-        }).catch(e => {
-          alert('Browser blockiert Autoplay. Bitte einmal auf die Seite klicken und nochmal versuchen!');
-        });
-      } else {
-        audio.pause();
-        isPlaying = false;
-        stopEqualizer();
-      }
-    }
-
-    function nextTrack() {
-      currentTrack = (currentTrack + 1) % tracks.length;
-      audio.src = tracks[currentTrack].src;
-      document.getElementById('track-name').textContent = tracks[currentTrack].name;
-      if (isPlaying) audio.play();
-    }
-
-    audio.addEventListener('ended', nextTrack);
-
-    function startEqualizer() {
-      document.querySelectorAll('.eq-bar').forEach(b => b.style.animationPlayState = 'running');
-    }
-    function stopEqualizer() {
-      document.querySelectorAll('.eq-bar').forEach(b => b.style.animationPlayState = 'paused');
-    }
-    stopEqualizer();
   </script>
 </body>
 </html>
