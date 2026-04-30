@@ -646,8 +646,13 @@
         <button class="music-btn" onclick="nextTrack()">⏭</button>
       </div>
 
-      <!-- Hidden audio player using YouTube IFrame API -->
-      <div id="yt-player" style="display:none;"></div>
+        <!-- YouTube embed als versteckter Player -->
+      <iframe id="yt-iframe"
+        src="https://www.youtube.com/embed/zUd0oRwV3WE?autoplay=0&controls=0&loop=1&enablejsapi=1"
+        allow="autoplay; encrypted-media"
+        style="width:0;height:0;border:none;position:absolute;"
+        id="yt-iframe">
+      </iframe>
     </div>
 
     <!-- VODKA INFOS -->
@@ -683,9 +688,6 @@
     </div>
 
   </div>
-
-  <!-- YouTube IFrame API -->
-  <script src="https://www.youtube.com/iframe_api"></script>
 
   <script>
     // === STARFIELD ===
@@ -737,50 +739,48 @@
     updateCountdown();
     setInterval(updateCountdown, 1000);
 
-    // === MUSIC: YouTube IFrame API ===
+    // === MUSIC via YouTube embed + postMessage API ===
     const tracks = [
       { id: 'zUd0oRwV3WE', name: '🎼 Lysenko - Ukrainische Rhapsodie' },
       { id: 'YKvPqO_RQRY', name: '🎻 Ukrainische Volksmelodien' },
       { id: 'v4SuNBaGJCY', name: '🎹 Klassik Ukraine - Piano' },
     ];
     let currentTrack = 0;
-    let player;
     let isPlaying = false;
 
-    function onYouTubeIframeAPIReady() {
-      player = new YT.Player('yt-player', {
-        height: '0',
-        width: '0',
-        videoId: tracks[0].id,
-        playerVars: { autoplay: 0, controls: 0 },
-        events: {
-          onStateChange: function(e) {
-            if (e.data === YT.PlayerState.ENDED) nextTrack();
-          }
-        }
-      });
+    function getIframe() {
+      return document.getElementById('yt-iframe');
+    }
+
+    function sendYT(cmd) {
+      const iframe = getIframe();
+      if (!iframe) return;
+      iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: cmd, args: [] }), '*');
+    }
+
+    function loadTrack(idx, play) {
+      const iframe = getIframe();
+      if (!iframe) return;
+      const autoplay = play ? 1 : 0;
+      iframe.src = `https://www.youtube.com/embed/${tracks[idx].id}?autoplay=${autoplay}&controls=0&enablejsapi=1&origin=${encodeURIComponent(location.origin || 'https://localhost')}`;
+      document.getElementById('track-name').textContent = tracks[idx].name;
     }
 
     function toggleMusic() {
-      if (!player) return;
-      if (isPlaying) {
-        player.pauseVideo();
-        isPlaying = false;
-        stopEqualizer();
-      } else {
-        player.playVideo();
+      if (!isPlaying) {
+        loadTrack(currentTrack, true);
         isPlaying = true;
         startEqualizer();
+      } else {
+        sendYT('pauseVideo');
+        isPlaying = false;
+        stopEqualizer();
       }
     }
 
     function nextTrack() {
       currentTrack = (currentTrack + 1) % tracks.length;
-      document.getElementById('track-name').textContent = tracks[currentTrack].name;
-      if (player) {
-        player.loadVideoById(tracks[currentTrack].id);
-        if (isPlaying) player.playVideo();
-      }
+      loadTrack(currentTrack, isPlaying);
     }
 
     function startEqualizer() {
